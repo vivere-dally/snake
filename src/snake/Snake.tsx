@@ -1,7 +1,6 @@
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import { Mesh, MeshBasicMaterial, Shape, ShapeGeometry, Vector3 } from "three";
-import { snakeStartDirection, snakeStartPosition, snakeStartSpeed, toVector3 } from "./constants";
 
 
 
