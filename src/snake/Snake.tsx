@@ -15,24 +15,35 @@ geometry.rotateX(Math.PI / 2);
 
 const material = new MeshBasicMaterial({ wireframe: true, color: 'white' })
 const mesh = new Mesh(geometry, material);
+// mesh.pos
+
+const sqShape = new Shape();
+
+const sqGeo = new ShapeGeometry(sqShape)
+sqGeo.rotateX(Math.PI / 2);
 
 export default function Snake() {
     const meshRef = useRef<Mesh>();
-    const direction = toVector3(snakeStartDirection);
+    const meshRef2 = useRef<Mesh>();
+    const meshRef3 = useRef<Mesh>();
 
-    useFrame(() => {
-        if (meshRef.current === undefined) {
-            return;
-        }
+    useFrame(({}) => {
+        // if (meshRef.current === undefined) {
+        //     return;
+        // }
 
-        const { position } = meshRef.current;
-        const {x, y} = direction.clone().multiplyScalar(snakeStartSpeed);
+        // const { position } = meshRef.current;
+        // const { x, y } = direction.clone().multiplyScalar(snakeStartSpeed);
 
-        position.x += x;
-        position.y += y;
+        // position.x += x;
+        // position.y += y;
     });
 
     return (
-        <mesh ref={meshRef} args={[geometry, material]} />
+        <group>
+            <mesh ref={meshRef} position={[0, 0, 0]} args={[geometry, material]} />
+            <mesh ref={meshRef2} position={[-1, 0, 0]} args={[geometry, material]} />
+            <mesh ref={meshRef3} position={[-2, 0, 0]} args={[sqGeo, material]} />
+        </group>
     )
 }

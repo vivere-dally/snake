@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { Vector3 } from "three";
-import { DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT, DIRECTION_UP, IS_DOWN, IS_LEFT, IS_RIGHT, IS_UP } from "../utils/constants";
+import { DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT, DIRECTION_UP, IS_DOWN, IS_LEFT, IS_RIGHT, IS_UP } from "../../utils/constants";
 
 interface UserInputProps {
     notifyDirectionChange: (vector: Vector3) => void;
 }
 
-export function useUserInput({ notifyDirectionChange }: UserInputProps) {
+export function useSnakeControls({ notifyDirectionChange }: UserInputProps) {
     useEffect(() => {
         let lastKeyPressed = '';
         const handleKeyPressed = (e: KeyboardEvent) => {

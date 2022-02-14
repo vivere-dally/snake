@@ -1,22 +1,43 @@
 import { Vector3 } from "three";
-import { NUMBER_COMPARISON_TOLERANCE } from "../../utils/constants";
-import { BodySegment, SegmentType } from "./body";
+
+export const HALF_BOARD_SIZE: number = 21;
+
+export const NUMBER_COMPARISON_TOLERANCE: number = 1e7;
+
+export const SNAKE_INIT_SIZE = 3;
+export const SNAKE_INIT_POSITION = new Vector3(0.5, 0.5);
+export const SNAKE_INIT_DIRECTION = new Vector3(1, 0);
+export const SNAKE_INIT_SPEED = 1e3;
+
+export interface SnakeSegment {
+    position: Vector3;
+    direction: Vector3;
+}
 
 export class Snake {
-    private __snake: BodySegment[];
+    private __snake: SnakeSegment[];
 
-    constructor(
-        size: number,
-        position: Vector3,
-        direction: Vector3
-    ) {
+    private static __instance: Snake;
+
+    private constructor() {
         this.__snake = []
-        this.__snake.push({ position: position.clone(), direction: direction.clone(), type: SegmentType.HEAD });
-        for (let index = 1; index <= size; index++) {
-            const segmentPosition = position.clone();
+        this.__snake.push({ position: SNAKE_INIT_POSITION.clone(), direction: SNAKE_INIT_DIRECTION.clone() });
+        for (let index = 1; index <= SNAKE_INIT_SIZE; index++) {
+            const segmentPosition = SNAKE_INIT_POSITION.clone();
             segmentPosition.x -= index;
-            this.__snake.push({ position: segmentPosition, direction: direction.clone(), type: SegmentType.BODY });
+            this.__snake.push({ position: segmentPosition, direction: SNAKE_INIT_DIRECTION.clone() });
         }
+    }
+
+    /**
+     * instance
+     */
+    public static get instance(): Snake {
+        if (!this.__instance) {
+            this.__instance = new Snake();
+        }
+
+        return this.__instance;
     }
 
     /**
@@ -24,7 +45,7 @@ export class Snake {
      */
     public move(speed: number) {
         // Save the head's coordinates
-        let segment: BodySegment = { ...this.__snake[0], type: SegmentType.BODY };
+        let segment: SnakeSegment = { ...this.__snake[0] };
 
         // Move the head
         const { x, y } = this.__snake[0].direction.clone().multiplyScalar(speed);
@@ -68,10 +89,16 @@ export class Snake {
     }
 
     private grow() {
-        const segment: BodySegment = { ...this.__snake[this.__snake.length - 1] };
+        const segment: SnakeSegment = { ...this.__snake[this.__snake.length - 1] };
         segment.position.x -= segment.direction.x;
         segment.position.y -= segment.direction.y;
 
         this.__snake.push(segment);
     }
+
+
+    public get snakeSegments() {
+        return this.__snake;
+    }
+
 }

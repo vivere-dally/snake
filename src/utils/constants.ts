@@ -3,7 +3,7 @@ import { Vector2, Vector3 } from "three";
 export const NUMBER_COMPARISON_TOLERANCE: number = 1e7;
 
 // The game map size (BOARD_SIZE x BOARD_SIZE)
-export const BOARD_SIZE: number = 15;
+export const BOARD_SIZE: number = 21;
 
 // Snake
 export const SNAKE_INIT_SIZE = 3;

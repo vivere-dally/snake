@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from './home/Home';
-import Game from './snake/Game';
+import Game from './game/Game';
 
 function App() {
   return (
