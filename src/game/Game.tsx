@@ -1,6 +1,7 @@
 import { OrthographicCamera } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
 import { useEffect } from "react";
+import Map from "./Map";
 import SnakeGame from "./SnakeGame";
 
 const CameraSetup = () => {
@@ -23,6 +24,7 @@ export default function Game() {
                 zoom={40}
             />
             <CameraSetup />
+            <Map />
             <SnakeGame />
         </Canvas>
     );

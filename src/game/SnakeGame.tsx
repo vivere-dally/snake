@@ -1,8 +1,10 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
-import { Sprite, SpriteMaterial, Vector3 } from "three";
+import { Euler, Sprite, SpriteMaterial, Vector3 } from "three";
 import Food from "../core/food";
-import { Snake } from "../core/snake";
+import { useSnakeControls } from "../core/hooks/useSnakeControls";
+import { useSnakeSpeed } from "../core/hooks/useSnakeSpeed";
+import { HALF_BOARD_SIZE, Snake, SNAKE_INIT_SPEED } from "../core/snake";
 import { FOOD, GET_SNAKE_TEXTURE, SNAKE_HEAD, SNAKE_HEAD2 } from "../core/textures";
 
 const assignXY = (a: Vector3, b: Vector3): void => {
@@ -22,6 +24,8 @@ export default function SnakeGame() {
     assignXY(foodSprite.position, Food.instance.position);
 
     // Snake
+    const canMove = useSnakeSpeed();
+    useSnakeControls({ notifyDirectionChange: Snake.instance.changeDirection });
     const snakeSprites: Sprite[] = [];
 
     useEffect(() => {
@@ -34,6 +38,7 @@ export default function SnakeGame() {
                 map: GET_SNAKE_TEXTURE(prev, index + 1 === Snake.instance.snakeSegments.length ? undefined : element.position)
             }));
             assignXY(sprite.position, element.position);
+            sprite.material.rotation = element.rotation;
             snakeSprites.push(sprite);
 
             prev = sprite.position;
@@ -42,16 +47,22 @@ export default function SnakeGame() {
         scene.add(...snakeSprites);
     }, []);
 
+
     useFrame(() => {
-        if (isPaused) {
+        if (!canMove()) {
             return;
+        }
+
+        if (!Snake.instance.hasHitTheWall(HALF_BOARD_SIZE)) {
+            Snake.instance.move();
         }
 
         // Food.instance.generate();
 
-        if (foodRef.current) {
-            foodRef.current.position.x = Food.instance.position.x;
-            foodRef.current.position.y = Food.instance.position.y;
+        for (let index = 0; index < Snake.instance.snakeSegments.length; index++) {
+            const element = Snake.instance.snakeSegments[index];
+            assignXY(snakeSprites[index].position, element.position);
+            snakeSprites[index].updateMatrix();
         }
     });
 
