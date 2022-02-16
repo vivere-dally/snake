@@ -5,8 +5,8 @@ export const HALF_BOARD_SIZE: number = 21;
 export const NUMBER_COMPARISON_TOLERANCE: number = 1e7;
 
 export const SNAKE_INIT_SIZE = 3;
-export const SNAKE_INIT_POSITION = new Vector3(0, 0);
-export const SNAKE_INIT_DIRECTION = new Vector3(1, 0);
+export const SNAKE_INIT_POSITION = new Vector3(-3, -3);
+export const SNAKE_INIT_DIRECTION = new Vector3(0, 1);
 export const SNAKE_INIT_SPEED = 1e2;
 
 export const HEAD_HORIZONTAL_LEFT_TO_RIGHT = Math.PI / 2;
@@ -34,7 +34,8 @@ export class Snake {
         this.__snake.push({ position: SNAKE_INIT_POSITION.clone(), direction: SNAKE_INIT_DIRECTION.clone(), rotation: HEAD_HORIZONTAL_LEFT_TO_RIGHT });
         for (let index = 1; index <= SNAKE_INIT_SIZE; index++) {
             const segmentPosition = SNAKE_INIT_POSITION.clone();
-            segmentPosition.x -= index;
+            segmentPosition.sub(SNAKE_INIT_DIRECTION.clone().multiplyScalar(index));
+            // segmentPosition.x -= index;
             this.__snake.push({ position: segmentPosition, direction: SNAKE_INIT_DIRECTION.clone(), rotation: BODY_HORIZONTAL });
         }
     }

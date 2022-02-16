@@ -17,13 +17,13 @@ const CameraSetup = () => {
 
 export default function Game() {
     return (
-        <Canvas style={{ width: '100vw', height: '100vh' }}>
-            <OrthographicCamera
+        <Canvas style={{ width: '100vw', height: '100vh' }} camera={{ zoom: 0.15 }}>
+            {/* <OrthographicCamera
                 makeDefault
                 position={[0, Math.PI / 2, 0]}
                 zoom={40}
-            />
-            <CameraSetup />
+            /> */}
+            {/* <CameraSetup /> */}
             <Map />
             <SnakeGame />
         </Canvas>
