@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 import { Vector3 } from "three";
+import { SNAKE_INIT_DIRECTION } from "../snake";
 
 const DIRECTIONS: Readonly<Record<string, Vector3>> = {
-    'KeyW': new Vector3(0, -1),
-    'ArrowUp': new Vector3(0, -1),
+    'KeyW': new Vector3(0, 1),
+    'ArrowUp': new Vector3(0, 1),
 
-    'KeyS': new Vector3(0, 1),
-    'ArrowDown': new Vector3(0, 1),
+    'KeyS': new Vector3(0, -1),
+    'ArrowDown': new Vector3(0, -1),
 
     'KeyA': new Vector3(-1, 0),
     'ArrowLeft': new Vector3(-1, 0),
@@ -35,7 +36,7 @@ interface UserInputProps {
 
 export function useSnakeControls({ notifyDirectionChange }: UserInputProps) {
     useEffect(() => {
-        let lastDirection = DIRECTIONS['ArrowRight'];
+        let lastDirection = SNAKE_INIT_DIRECTION.clone();
         const handleKeyPressed = (e: KeyboardEvent) => {
             const direction = DIRECTIONS[e.key];
             if (!direction) {
@@ -47,8 +48,8 @@ export function useSnakeControls({ notifyDirectionChange }: UserInputProps) {
                 return;
             }
 
-            notifyDirectionChange(direction.clone());
             lastDirection = direction;
+            notifyDirectionChange(direction.clone());
         }
 
         document.addEventListener('keydown', handleKeyPressed);

@@ -55,9 +55,13 @@ export class Snake {
      * move
      */
     public move() {
+        let prevDirection = this.__snake[0].direction.clone();
         for (let index = 0; index < this.__snake.length; index++) {
             const element = this.__snake[index];
             element.position.add(element.direction);
+            const temp = element.direction;
+            element.direction = prevDirection;
+            prevDirection = temp;
         }
     }
 
