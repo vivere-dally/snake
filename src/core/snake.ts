@@ -1,49 +1,17 @@
-import { Vector3 } from "three";
-
-export const HALF_BOARD_SIZE: number = 21;
-
-export const NUMBER_COMPARISON_TOLERANCE: number = 1e7;
-
-export const SNAKE_INIT_SIZE = 3;
-export const SNAKE_INIT_POSITION = new Vector3(-3, -3);
-export const SNAKE_INIT_DIRECTION = new Vector3(0, 1);
-export const SNAKE_INIT_SPEED = 1e2;
-
-export const HEAD_HORIZONTAL_LEFT_TO_RIGHT = Math.PI / 2;
-export const HEAD_HORIZONTAL_RIGHT_TO_LEFT = -Math.PI / 2;
-
-export const HEAD_VERTICAL_TOP_TO_BOTTOM = 0;
-export const HEAD_VERTICAL_BOTTOM_TO_TOP = Math.PI;
-
-export const BODY_VERTICAL = 0;
-export const BODY_HORIZONTAL = -Math.PI / 2;
+import { Sprite, SpriteMaterial, Vector3 } from "three";
+import { NUMBER_COMPARISON_TOLERANCE, ROTATION, SNAKE_INIT } from "../constants";
+import { SNAKE_BODY_STRAIGHT, SNAKE_HEAD, SNAKE_TAIL } from "./textures";
+import { numEq, setV3 } from "./utils";
 
 export interface SnakeSegment {
-    position: Vector3;
-    direction: Vector3;
-    rotation: number;
+    direction: Vector3,
+    sprite: Sprite
 }
 
 export class Snake {
-    private __snake: SnakeSegment[];
-
     private static __instance: Snake;
 
-    private constructor() {
-        this.__snake = []
-        this.__snake.push({ position: SNAKE_INIT_POSITION.clone(), direction: SNAKE_INIT_DIRECTION.clone(), rotation: HEAD_HORIZONTAL_LEFT_TO_RIGHT });
-        for (let index = 1; index <= SNAKE_INIT_SIZE; index++) {
-            const segmentPosition = SNAKE_INIT_POSITION.clone();
-            segmentPosition.sub(SNAKE_INIT_DIRECTION.clone().multiplyScalar(index));
-            // segmentPosition.x -= index;
-            this.__snake.push({ position: segmentPosition, direction: SNAKE_INIT_DIRECTION.clone(), rotation: BODY_HORIZONTAL });
-        }
-    }
-
-    /**
-     * instance
-     */
-    public static get instance(): Snake {
+    public static get instance() {
         if (!this.__instance) {
             this.__instance = new Snake();
         }
@@ -51,37 +19,45 @@ export class Snake {
         return this.__instance;
     }
 
+    private constructor() {
+        this.__direction = SNAKE_INIT.DIRECTION.clone();
+        this.__snake = [];
+
+        for (let index = 0; index < SNAKE_INIT.SIZE; index++) {
+            const map = index === 0 ? SNAKE_HEAD : index === SNAKE_INIT.SIZE - 1 ? SNAKE_TAIL : SNAKE_BODY_STRAIGHT;
+            const sprite = new Sprite(new SpriteMaterial({ map, rotation: ROTATION(SNAKE_INIT.DIRECTION) }));
+            setV3(sprite.position, SNAKE_INIT.POSITION.clone().sub(SNAKE_INIT.DIRECTION.clone().multiplyScalar(index)));
+            this.__snake.push({ direction: SNAKE_INIT.DIRECTION.clone(), sprite: sprite });
+        }
+    }
+
+    private __direction: Vector3;
+    private __snake: SnakeSegment[];
+
     /**
      * move
      */
     public move() {
-        let prevDirection = this.__snake[0].direction.clone();
+        let direction = this.__direction;
         for (let index = 0; index < this.__snake.length; index++) {
             const element = this.__snake[index];
-            element.position.add(element.direction);
-            const temp = element.direction;
-            element.direction = prevDirection;
-            prevDirection = temp;
+            element.sprite.position.add(direction);
+            // TODO - set material map
+            element.sprite.material.rotation = ROTATION(direction);
+            element.sprite.updateMatrix();
+            [element.direction, direction] = [direction, element.direction];
         }
-    }
 
-    public changeDirection(direction: Vector3) {
-        let next = direction;
-        for (let index = 0; index < Snake.instance.snakeSegments.length; index++) {
-            const temp = Snake.instance.snakeSegments[index].direction.clone();
-            Snake.instance.snakeSegments[index].direction = next;
-            next = temp;
-        }
+        this.__direction = this.__snake[0].direction;
     }
 
     /**
-     * hasHitTheWall
+     * canEat
      */
-    public hasHitTheWall(size: number): boolean {
-        const halfSize = size / 2;
-        const { x, y } = this.__snake[0].position;
-        if (x < -halfSize || x >= halfSize ||
-            y < -halfSize || y >= halfSize) {
+    public canEat({ x: foodX, y: foodY }: Vector3) {
+        const { x: headX, y: headY } = this.__snake[0].sprite.position;
+        if (numEq(headX, foodX, NUMBER_COMPARISON_TOLERANCE) &&
+            numEq(headY, foodY, NUMBER_COMPARISON_TOLERANCE)) {
             return true;
         }
 
@@ -91,28 +67,21 @@ export class Snake {
     /**
      * eat
      */
-    public eat({ x: foodX, y: foodY }: Vector3): boolean {
-        const { x: headX, y: headY } = this.__snake[0].position;
-        if (headX.equals(foodX, NUMBER_COMPARISON_TOLERANCE) &&
-            headY.equals(foodY, NUMBER_COMPARISON_TOLERANCE)) {
-            this.grow();
-            return true;
-        }
+    public eat() {
+        const previousTail = this.__snake.at(-1)!;
+        const tail = new Sprite(new SpriteMaterial({ map: SNAKE_TAIL, rotation: ROTATION(previousTail.direction) }));
+        setV3(tail.position, previousTail.sprite.position.clone().sub(previousTail.direction));
 
-        return false;
+        // TODO - set previous tail material map
+        this.__snake.push({ direction: previousTail.direction, sprite: tail });
+        return tail;
     }
 
-    private grow() {
-        const segment: SnakeSegment = { ...this.__snake[this.__snake.length - 1] };
-        segment.position.x -= segment.direction.x;
-        segment.position.y -= segment.direction.y;
-
-        this.__snake.push(segment);
+    public set direction(v: Vector3) {
+        this.__direction = v;
     }
 
-
-    public get snakeSegments() {
+    public get segments() {
         return this.__snake;
     }
-
 }
