@@ -21,8 +21,8 @@ export function useSnakeControls({ notifyDirectionChange }: UserInputProps) {
                 return;
             }
 
-            lastDirection = direction.FRONT;
             notifyDirectionChange(direction.FRONT.clone());
+            lastDirection = direction.FRONT;
         }
 
         document.addEventListener('keydown', handleKeyPressed);

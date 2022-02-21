@@ -31,10 +31,10 @@ export const DIRECTION: Record<string, FR> = {
 
 export function ROTATION({ x, y }: Vector3): number {
     return match([x, y])
-        .with([0, 1], () => Math.PI)
-        .with([1, 0], () => Math.PI / 2)
-        .with([0, -1], () => 0)
-        .with([-1, 0], () => - Math.PI / 2)
+        .with([0, 1], () => 0)
+        .with([1, 0], () => -Math.PI / 2)
+        .with([0, -1], () => Math.PI)
+        .with([-1, 0], () => Math.PI / 2)
         .otherwise(() => 0);
 }
 
