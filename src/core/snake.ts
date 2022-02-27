@@ -1,6 +1,6 @@
 import { Sprite, SpriteMaterial, Vector3 } from "three";
 import { NUMBER_COMPARISON_TOLERANCE, ROTATION, SNAKE_INIT } from "../constants";
-import { SNAKE_BODY_STRAIGHT, SNAKE_HEAD, SNAKE_TAIL } from "./textures";
+import { GET_SNAKE_BODY_TEXTURE, GET_SNAKE_TEXTURE, SNAKE_BODY_STRAIGHT, SNAKE_HEAD, SNAKE_TAIL } from "./textures";
 import { numEq, setV3 } from "./utils";
 
 export interface SnakeSegment {
@@ -43,6 +43,10 @@ export class Snake {
             const element = this.__snake[index];
             element.sprite.position.add(direction);
             // TODO - set material map
+            if (0 < index && index < this.__snake.length - 1) {
+                element.sprite.material.map = GET_SNAKE_BODY_TEXTURE(this.__snake[index - 1].direction, element.direction);
+            }
+
             element.sprite.material.rotation = ROTATION(direction);
             element.sprite.updateMatrix();
             [element.direction, direction] = [direction, element.direction];
