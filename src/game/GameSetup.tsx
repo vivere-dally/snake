@@ -18,14 +18,14 @@ export default function GameSetup() {
     }, []);
 
     useFrame(() => {
-        if (!canMove()) {
+        if (!canMove() || Snake.instance.hasCollided()) {
             return;
         }
 
         Snake.instance.move();
         if (Snake.instance.canEat(Food.instance.position)) {
             scene.add(Snake.instance.eat());
-            Food.instance.generate();
+            Food.instance.generate(Snake.instance.segments.map(e => e.sprite.position.clone()));
         }
     });
 

@@ -1,5 +1,5 @@
 import { Sprite, SpriteMaterial, Vector3 } from "three";
-import { NUMBER_COMPARISON_TOLERANCE, ROTATION, SNAKE_INIT } from "../constants";
+import { HALF_BOARD_SIZE, NUMBER_COMPARISON_TOLERANCE, ROTATION, SNAKE_INIT } from "../constants";
 import { GET_SNAKE_BODY_TEXTURE, GET_SNAKE_TEXTURE, SNAKE_BODY_STRAIGHT, SNAKE_HEAD, SNAKE_TAIL } from "./textures";
 import { numEq, setV3 } from "./utils";
 
@@ -43,9 +43,9 @@ export class Snake {
             const element = this.__snake[index];
             element.sprite.position.add(direction);
             // TODO - set material map
-            if (0 < index && index < this.__snake.length - 1) {
-                element.sprite.material.map = GET_SNAKE_BODY_TEXTURE(this.__snake[index - 1].direction, element.direction);
-            }
+            // if (0 < index && index < this.__snake.length - 1) {
+            //     element.sprite.material.map = GET_SNAKE_BODY_TEXTURE(this.__snake[index - 1].direction, element.direction);
+            // }
 
             element.sprite.material.rotation = ROTATION(direction);
             element.sprite.updateMatrix();
@@ -79,6 +79,29 @@ export class Snake {
         // TODO - set previous tail material map
         this.__snake.push({ direction: previousTail.direction, sprite: tail });
         return tail;
+    }
+
+    /**
+     * hasCollided
+     */
+    public hasCollided() {
+        const head = this.__snake[0].sprite.position;
+        if (head.x < -HALF_BOARD_SIZE || head.x > HALF_BOARD_SIZE) {
+            return true;
+        }
+
+        if (head.y < -HALF_BOARD_SIZE || head.y > HALF_BOARD_SIZE) {
+            return true;
+        }
+
+        for (let index = 1; index < this.__snake.length; index++) {
+            const element = this.__snake[index];
+            if (element.sprite.position.equals(head)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public set direction(v: Vector3) {
