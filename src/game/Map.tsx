@@ -8,8 +8,6 @@ mapTileTexture.wrapS = mapTileTexture.wrapT = RepeatWrapping;
 mapTileTexture.repeat.set(BOARD_SIZE, BOARD_SIZE);
 
 const mapTileMaterial = new SpriteMaterial({ map: mapTileTexture, side: DoubleSide });
-mapTileMaterial.transparent = false;
-mapTileMaterial.opacity = 0;
 const mapTile = new Sprite(mapTileMaterial);
 mapTile.scale.set(BOARD_SIZE, BOARD_SIZE, 0);
 
@@ -20,5 +18,11 @@ export default function Map() {
         scene.add(mapTile);
     }, []);
 
-    return null;
+    // For some reason, if I don't use the `mapTileTexture` in the JSX, it gets rendered very dimly.
+    // Maybe there is some ThreeJS caveat that I do not know.
+    return (
+        <sprite position={[-1000, -1000, 0]}>
+            <spriteMaterial map={mapTileTexture} />
+        </sprite>
+    );
 }
